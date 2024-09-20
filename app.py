@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, url_for
 import requests
 from requests.auth import HTTPBasicAuth
+import json
 
 app = Flask(__name__)
 
@@ -63,40 +64,55 @@ def form():
         headers = {
             'Content-type': 'application/json',
             'Accept': 'application/json',
-            'api-version': '4.0'
+            'api-version': '4.0',
+            'Authorization': '••••••'
         }
         data = {
             "phone": phone_number,
             "email": email
         }
 
+        payload = json.dumps({
+                    "retain": {},
+                    "match_lead": data
+                    })
         # Make the POST request
         # print(TrustedForm)
         # print(data_dict)
         # print(ehb_api_url)
 
         # print('----------------------______--------------------_______-----------------------------______--------------------_______-----------------------------')
-        response_tf = requests.post(comments, json=data, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
+        response_tf = requests.post(comments, data=payload, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
 
         full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
         query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
 
         # response_ehb_api = requests.get(full_url)
-        response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
-        print(response_ehb_api.url)
-
+        if response_tf.status_code == 200:
+            response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
+            return jsonify({
+            "trustedform_response": {
+                "status_code": response_tf.status_code,
+                "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
+            },
+            "ehb_api_response": {
+                "status_code": response_ehb_api.status_code,
+                "response": response_ehb_api.text
+            }
+        }), 200
+        
         return jsonify({
-        "trustedform_response": {
-            "status_code": response_tf.status_code,
-            "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
-        },
-        "ehb_api_response": {
-            "status_code": response_ehb_api.status_code,
-            "response": response_ehb_api.text
-        }
-    }), 200
+            "trustedform_response": {
+                "status_code": response_tf.status_code,
+                "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
+            },
+            "ehb_api_response": {
+                "status_code": 400,
+                "response": "Couldnt verify Trusted Form, Lead not inserted"
+            }
+        }), 200
 
-    
+
     return jsonify({
         "status": "This is a post request endpoint",
     }), 200  # 400 Error
