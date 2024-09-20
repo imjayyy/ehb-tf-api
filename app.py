@@ -37,7 +37,7 @@ def form():
         custom_fields = request.args.get('custom_fields')
         subID = request.args.get('subID')
         email = request.args.get('email')
-
+        comments = request.args.get('comments')
         data_dict = {
             "source": source,
             "user": user,
@@ -76,7 +76,7 @@ def form():
         # print(ehb_api_url)
 
         # print('----------------------______--------------------_______-----------------------------______--------------------_______-----------------------------')
-        response_tf = requests.post(TrustedForm, json=data, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
+        response_tf = requests.post(comments, json=data, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
 
         full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
         query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
