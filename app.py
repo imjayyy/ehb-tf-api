@@ -77,8 +77,13 @@ def form():
 
         # print('----------------------______--------------------_______-----------------------------______--------------------_______-----------------------------')
         response_tf = requests.post(TrustedForm, json=data, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
-        response_ehb_api = requests.post(ehb_api_url, params=data_dict)
 
+        full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
+        query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
+
+        # response_ehb_api = requests.get(full_url)
+        response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
+        print(response_ehb_api.url)
 
         return jsonify({
         "trustedform_response": {
