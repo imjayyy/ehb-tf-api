@@ -86,7 +86,7 @@ def form():
 
             full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
             query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
-            print(query_parameters)
+            return jsonify(query_parameters)
 
             # response_ehb_api = requests.get(full_url)
             if response_tf.status_code == 200:
@@ -121,7 +121,7 @@ def form():
             }), 200  # 400 Error
     except Exception as e:
         return jsonify({
-                "status": str(e),
+                "status": str(e),                
             }), 500 
 
 if __name__ == '__main__':
