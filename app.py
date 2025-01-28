@@ -80,7 +80,7 @@ def form():
         # print(data_dict)
         # print(ehb_api_url)
 
-        # print('----------------------______--------------------_______-----------------------------______--------------------_______-----------------------------')
+        # print('------------------------------------------------------------------------------------------------------------------')
         response_tf = requests.post(comments, data=payload, headers=headers, auth=HTTPBasicAuth('API', API_KEY))
 
         full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
@@ -99,7 +99,6 @@ def form():
                 "status_code": response_ehb_api.status_code,
                 "response": response_ehb_api.text,
                 "response-url": response_ehb_api.url
-
             }
         }), 200
         
@@ -189,7 +188,7 @@ def new_api():
         # print(data_dict)
         # print(ehb_api_url)
 
-        # print('----------------------______--------------------_______-----------------------------______--------------------_______-----------------------------')
+        # print('-------------------------------------------------------------------------------------------------------------------------------')
     TF_api_key = "885d6f4346acf8df54030bbc0225231f"
     response_tf = requests.post(comments, data=payload, headers=headers, auth=HTTPBasicAuth('API', TF_api_key))
     print(response_tf.text)
@@ -216,6 +215,7 @@ def new_api():
         full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
         query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
         response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
+        print(response_ehb_api.text)
 
         return jsonify({
             "trustedform_response": {
