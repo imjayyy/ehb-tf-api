@@ -211,26 +211,29 @@ def new_api():
             "status": "Lead is a duplicate"
         }), 400)
     else:
+        try:
+            full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
+            query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
+            response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
+            print(response_ehb_api.text)
 
-        full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
-        query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
-        response_ehb_api = requests.get(ehb_api_url, params=query_parameters)
-        print(response_ehb_api.text)
+            return jsonify({
+                "trustedform_response": {
+                    "status_code": response_tf.status_code,
+                    "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
+                },
+                "ehb_api_response": {
+                    "status_code": response_ehb_api.status_code,
+                    "response": response_ehb_api.text,
+                    "response-url": response_ehb_api.url
 
-        return jsonify({
-            "trustedform_response": {
-                "status_code": response_tf.status_code,
-                "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
-            },
-            "ehb_api_response": {
-                "status_code": response_ehb_api.status_code,
-                "response": response_ehb_api.text,
-                "response-url": response_ehb_api.url
+                }
+            }), 200
 
-            }
-        }), 200
-
-
+        except Exception as e:  
+            return jsonify({
+                "status": str(e),                
+            }), 500
     # return jsonify(clients)
 
 
