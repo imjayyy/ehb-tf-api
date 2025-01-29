@@ -214,22 +214,34 @@ def new_api():
         try:
             full_url = f"{ehb_api_url}/?{requests.utils.quote('&'.join([f'{key}={value}' for key, value in data_dict.items()]))}"
             query_parameters = request.args.to_dict()  # Convert MultiDict to a regular dict
-            response_ehb_api = requests.get(full_url, params=query_parameters)
-            print(response_ehb_api.text)
+            if response_tf.status_code == 200:  
 
-            return jsonify({
-                "trustedform_response": {
-                    "status_code": response_tf.status_code,
-                    "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
-                },
-                "ehb_api_response": {
-                    "status_code": response_ehb_api.status_code,
-                    "response": response_ehb_api.text,
-                    "response-url": response_ehb_api.url
+                response_ehb_api = requests.get(full_url, params=query_parameters)
+                print(response_ehb_api.text)
 
-                }
-            }), 200
+                return jsonify({
+                    "trustedform_response": {
+                        "status_code": response_tf.status_code,
+                        "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
+                    },
+                    "ehb_api_response": {
+                        "status_code": response_ehb_api.status_code,
+                        "response": response_ehb_api.text,
+                        "response-url": response_ehb_api.url
 
+                    }
+                }), 200
+            else:
+                return jsonify({
+                    "trustedform_response": {
+                        "status_code": response_tf.status_code,
+                        "response": response_tf.json() if response_tf.status_code == 200 else response_tf.text
+                    },
+                    "ehb_api_response": {
+                        "status_code": 400,
+                        "response": "Couldnt verify Trusted Form, Lead not inserted"
+                    }
+                }), 200
         except Exception as e:  
             return jsonify({
                 "status": str(e),                
